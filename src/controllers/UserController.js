@@ -1,0 +1,96 @@
+const UserService = require("../services/UserServices");
+// const jwtservice = require("../services/JwtServices");
+const User = require("../models/User");
+
+const CreateUser = async (req, res) => {
+  try {
+    const { UserName, Email, Password, confirmPassword } = req.body;
+    if (!UserName || !Email || !Password || !confirmPassword) {
+      return res.status(200).json({
+        status: "ERROR",
+        message: "The input is required",
+      });
+    } else if (Password !== confirmPassword) {
+      return res.status(200).json({
+        status: "ERROR",
+        message: "The password and confirm password are not the same",
+      });
+    }
+
+    const checkEmail = await User.findOne({ Email });
+    if (checkEmail !== null) {
+      return res.status(200).json({
+        status: "ERROR",
+        message: "Email already exists",
+      });
+    }
+
+    const newUser = await UserService.createUser(req.body);
+    return res.status(200).json({
+      status: "OK",
+      message: "User created successfully",
+      data: newUser,
+    });
+  } catch (e) {
+    return res.status(404).json({
+      error: e.message,
+    });
+  }
+};
+
+const LoginUser = async (req, res) => {
+  try {
+    const { UserName, Password } = req.body;
+    if (!UserName || !Password) {
+      return res.status(200).json({
+        status: "ERROR",
+        message: "The input is required",
+      });
+    }
+    const user = await UserService.FindUserByUserName(UserName);
+    if (!user) {
+      return res.status(200).json({
+        status: "ERROR",
+        message: "The user does not exist",
+      });
+    }
+    const userPass = user.data.Password;
+    const isPasswordMatch = UserService.CheckPassword(Password, userPass);
+    if (!isPasswordMatch) {
+      return res.status(200).json({
+        status: "ERROR",
+        message: "The password is incorrect",
+      });
+    }
+    const response = await UserService.loginUser(req.body);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      error: e.message,
+    });
+  }
+};
+
+const DeleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    if (!userId) {
+      return res.status(200).json({
+        status: "ERROR",
+        message: "The userId is required",
+      });
+    }
+    const response = await UserService.DeleteUser(userId);
+    return res.status(200).json(response);
+  } catch (e) {
+    return res.status(404).json({
+      error: e.message,
+    });
+  }
+};
+
+module.exports = {
+  CreateUser,
+  LoginUser,
+  DeleteUser,
+};
