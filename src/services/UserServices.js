@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcryptjs = require("bcryptjs");
 const genneralToken = require("./JwtServices");
+const { JsonWebTokenError } = require("jsonwebtoken");
 require("dotenv").config();
 
 const createUser = async (newUser) => {
@@ -133,10 +134,37 @@ const DeleteUser = (id) => {
   });
 };
 
+const GetDetailsUserByUserName = (UserName) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await User.findOne({ UserName: UserName });
+      if (!user) {
+        resolve({
+          status: "ERROR",
+          message: "User does not exist",
+        });
+      } else {
+        resolve({
+          status: "OK",
+          message: "User fetched successfully",
+          data: {
+            UserName: user.UserName,
+            Email: user.Email,
+            PhoneNumber: user.PhoneNumber,
+          },
+        });
+      }
+    } catch (e) {
+      reject(e);
+    }
+  });
+};
+
 module.exports = {
   createUser,
   loginUser,
   FindUserByUserName,
   CheckPassword,
   DeleteUser,
+  GetDetailsUserByUserName,
 };

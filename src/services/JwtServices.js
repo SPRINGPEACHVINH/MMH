@@ -9,7 +9,7 @@ const genneralAccessToken = async (payload) => {
     },
     process.env.ACCESS_TOKEN,
     {
-      expiresIn: "1h",
+      expiresIn: "30s",
     }
   );
   return access_token;
@@ -31,9 +31,8 @@ const genneralRefreshToken = async (payload) => {
 const refreshToken = (token) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log("token", token);
       jwt.verify(token, process.env.REFRESH_TOKEN, async (err, user) => {
-        if(err) {
+        if (err) {
           resolve({
             status: "ERROR",
             message: "The token is invalid",
@@ -42,20 +41,20 @@ const refreshToken = (token) => {
         const { payload } = user
         const access_token = await genneralAccessToken({
           id: payload?.id,
-        })
-        console.log("access_token", access_token);
+          isAdmin: payload?.isAdmin,
+        });
         resolve({
           status: "OK",
           message: "Success",
           access_token,
         });
-      })
+      });
     } catch (e) {
       reject(e);
-    } 
+    }
   });
-
 };
+
 module.exports = {
   genneralAccessToken,
   genneralRefreshToken,
