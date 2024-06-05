@@ -1,6 +1,9 @@
 const UserService = require("../services/UserServices");
 const jwtservice = require("../services/JwtServices");
+const MailService = require("../services/MailServices");
+const crypto = require("crypto");
 const User = require("../models/User");
+const Token = require("../models/Token");
 
 const CreateUser = async (req, res) => {
   try {
@@ -26,6 +29,20 @@ const CreateUser = async (req, res) => {
     }
 
     const newUser = await UserService.createUser(req.body);
+    try {
+      const token = await Token.create({
+        UserId: newUser._id,
+        token: crypto.randomBytes(16).toString("hex"),
+      });
+
+      const sendEmail = await MailService.sendMail(
+        newUser.Email,
+        "Verify your email",
+        `Please verify your account by clicking the link: http://localhost:8888/api/mail/verify/${newUser.Email}/${token.token} + '\n\nThank You!\n' `
+      );
+    } catch (e) {
+      console.log(e);
+    }
     return res.status(200).json({
       status: "OK",
       message: "User created successfully",
@@ -130,5 +147,5 @@ module.exports = {
   LoginUser,
   DeleteUser,
   GetDetailsUser,
-  RefreshToken
+  RefreshToken,
 };

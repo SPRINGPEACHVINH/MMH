@@ -1,32 +1,42 @@
 const User = require("../models/User");
+const Token = require("../models/Token");
 const bcryptjs = require("bcryptjs");
 const genneralToken = require("./JwtServices");
-const { JsonWebTokenError } = require("jsonwebtoken");
+const MailService = require("./MailServices");
+const crypto = require("crypto");
 require("dotenv").config();
 
 const createUser = async (newUser) => {
-  const { UserName, Password, Email, PhoneNumber, Address } = newUser;
-  const bcryptjs_salt = parseInt(process.env.BCRYPTJS_SALT);
-  if (isNaN(bcryptjs_salt)) {
-    throw new Error(
-      "BCRYPTJS_SALT environment variable is not set or not a number"
-    );
-  }
-  const hash = bcryptjs.hashSync(Password, bcryptjs_salt, function (err, hash) {
-    if (err) {
-      console.log("Error: ", err);
+  try {
+    const { UserName, Password, Email, PhoneNumber, Address } = newUser;
+    const bcryptjs_salt = parseInt(process.env.BCRYPTJS_SALT);
+    if (isNaN(bcryptjs_salt)) {
+      throw new Error(
+        "BCRYPTJS_SALT environment variable is not set or not a number"
+      );
     }
-  });
+    const hash = bcryptjs.hashSync(
+      Password,
+      bcryptjs_salt,
+      function (err, hash) {
+        if (err) {
+          console.log("Error: ", err);
+        }
+      }
+    );
 
-  const createdUser = await User.create({
-    UserName,
-    Password: hash,
-    Email,
-    PhoneNumber,
-    Address,
-  });
-
-  return createdUser;
+    const createdUser = await User.create({
+      UserName,
+      Password: hash,
+      Email,
+      PhoneNumber,
+      Address,
+    });
+    
+    return createdUser;
+  } catch (e) {
+    console.log(e);
+  }
 };
 
 const loginUser = (userLogin) => {
@@ -55,6 +65,12 @@ const loginUser = (userLogin) => {
         resolve({
           status: "ERROR",
           message: "The password is incorrect",
+        });
+      }
+      if (!checkUser.isVerified) {
+        resolve({
+          status: "ERROR",
+          message: "The account has not been verified",
         });
       }
 
