@@ -32,11 +32,10 @@ const verifyMail = async (req, res) => {
   if (!token) {
     return res.status(200).json({
       status: "ERROR",
-      message:
-        "Your verification link may have expired. Please click on resend for verify your Email",
+      message: "Your verification link may have expired. Please SignUp again!",
     });
   } else {
-    const user = await User.findOne({ Email: req.params.email});
+    const user = await User.findOne({ Email: req.params.email });
     if (!user) {
       return res.status(200).json({
         status: "ERROR",
@@ -51,7 +50,7 @@ const verifyMail = async (req, res) => {
     } else {
       try {
         await User.updateOne({ Email: req.params.email }, { isVerified: true });
-        await Token.findByIdAndDelete(token._id);
+        const deleteToken = await Token.findByIdAndDelete(token._id);
         return res.status(200).json({
           status: "OK",
           message: "The account has been successfully verified.",

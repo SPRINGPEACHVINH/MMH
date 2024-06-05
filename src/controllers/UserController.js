@@ -71,14 +71,6 @@ const LoginUser = async (req, res) => {
         message: "The user does not exist",
       });
     }
-    const userPass = user.data.Password;
-    const isPasswordMatch = UserService.CheckPassword(Password, userPass);
-    if (!isPasswordMatch) {
-      return res.status(200).json({
-        status: "ERROR",
-        message: "The password is incorrect",
-      });
-    }
     const response = await UserService.loginUser(req.body);
     return res.status(200).json(response);
   } catch (e) {
@@ -124,16 +116,17 @@ const GetDetailsUser = async (req, res) => {
   }
 };
 
-const RefreshToken = async (req, res) => {
+const VerifyOTP = async (req, res) => {
   try {
-    const token = req.headers.token.split(" ")[1];
-    if (!token) {
-      return req.status(200).json({
+    const { UserName } = req.body;
+    if (!UserName) {
+      return res.status(200).json({
         status: "ERROR",
-        message: "The token is required",
+        message: "The input is required",
       });
     }
-    const response = await jwtservice.refreshToken(token);
+    const user = await UserService.FindUserByUserName(UserName);
+    const response = await UserService.VerifyOTP(req.body);
     return res.status(200).json(response);
   } catch (e) {
     return res.status(404).json({
@@ -142,10 +135,28 @@ const RefreshToken = async (req, res) => {
   }
 };
 
+// const RefreshToken = async (req, res) => {
+//   try {
+//     const token = req.headers.token.split(" ")[1];
+//     if (!token) {
+//       return req.status(200).json({
+//         status: "ERROR",
+//         message: "The token is required",
+//       });
+//     }
+//     const response = await jwtservice.refreshToken(token);
+//     return res.status(200).json(response);
+//   } catch (e) {
+//     return res.status(404).json({
+//       error: e.message,
+//     });
+//   }
+// };
+
 module.exports = {
   CreateUser,
   LoginUser,
   DeleteUser,
   GetDetailsUser,
-  RefreshToken,
+  VerifyOTP,
 };

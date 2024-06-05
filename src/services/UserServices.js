@@ -1,9 +1,6 @@
 const User = require("../models/User");
-const Token = require("../models/Token");
 const bcryptjs = require("bcryptjs");
 const genneralToken = require("./JwtServices");
-const MailService = require("./MailServices");
-const crypto = require("crypto");
 require("dotenv").config();
 
 const createUser = async (newUser) => {
@@ -73,13 +70,8 @@ const loginUser = (userLogin) => {
           message: "The account has not been verified",
         });
       }
-
+      
       const access_token = await genneralToken.genneralAccessToken({
-        id: checkUser._id,
-        isAdmin: checkUser.isAdmin,
-      });
-
-      const refresh_token = await genneralToken.genneralRefreshToken({
         id: checkUser._id,
         isAdmin: checkUser.isAdmin,
       });
@@ -88,7 +80,6 @@ const loginUser = (userLogin) => {
         status: "OK",
         message: "Success",
         access_token,
-        refresh_token,
       });
     } catch (e) {
       reject(e);
@@ -115,7 +106,6 @@ const FindUserByUserName = (UserName) => {
           message: "User fetched successfully",
           data: {
             UserName: user.UserName,
-            Password: user.Password,
             Email: user.Email,
           },
         });
