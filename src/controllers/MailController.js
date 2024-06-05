@@ -2,7 +2,6 @@ const Token = require("../models/Token");
 const User = require("../models/User");
 const MailService = require("../services/MailServices");
 const UserService = require("../services/UserServices");
-const bcryptjs = require("bcryptjs");
 
 const sendMail = async (req, res) => {
   const { Email, Subject, Content } = req.body;
@@ -51,8 +50,8 @@ const verifyMail = async (req, res) => {
       });
     } else {
       try {
-        user = await User.updateOne({ Email: req.params.email }, { isVerified: true });
-        console.log(user);
+        await User.updateOne({ Email: req.params.email }, { isVerified: true });
+        await Token.findByIdAndDelete(token._id);
         return res.status(200).json({
           status: "OK",
           message: "The account has been successfully verified.",

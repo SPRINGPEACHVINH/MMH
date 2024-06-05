@@ -38,7 +38,7 @@ const CreateUser = async (req, res) => {
       const sendEmail = await MailService.sendMail(
         newUser.Email,
         "Verify your email",
-        `Please verify your account by clicking the link: http://localhost:8888/api/mail/verify/${newUser.Email}/${token.token} + '\n\nThank You!\n' `
+        `Please verify your account by clicking the link: http://localhost:8888/api/mail/verify/${newUser.Email}/${token.token} \nThank You!\n`
       );
     } catch (e) {
       console.log(e);
