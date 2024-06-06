@@ -67,7 +67,36 @@ const authUserMiddleware = (req, res, next) => {
   });
 };
 
+const authVerifyMiddleware = (req, res, next) => {
+  if (!req.headers.token) {
+    return res.status(401).json({
+      status: "ERROR",
+      message: "No token provided",
+    });
+  }
+
+  const token = req.headers.token.split(" ")[1];
+  const userId = req.params.id;
+  jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+    if (err) {
+      return res.status(401).json({
+        status: "ERROR",
+        message: "Unauthorized",
+      });
+    }
+    if (decoded.payload?.isVerified || decoded.payload?.id == userId) {
+      next();
+    } else {
+      return res.status(403).json({
+        status: "ERROR",
+        message: "Access denied",
+      });
+    }
+  });
+}
+
 module.exports = {
   authMiddleware,
   authUserMiddleware,
+  authVerifyMiddleware,
 };

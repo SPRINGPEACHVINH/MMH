@@ -4,6 +4,7 @@ const MailService = require("../services/MailServices");
 const crypto = require("crypto");
 const User = require("../models/User");
 const Token = require("../models/Token");
+const OTP = require("../models/OTP");
 
 const CreateUser = async (req, res) => {
   try {
@@ -118,16 +119,76 @@ const GetDetailsUser = async (req, res) => {
 
 const VerifyOTP = async (req, res) => {
   try {
-    const { UserName } = req.body;
-    if (!UserName) {
-      return res.status(200).json({
+    const OtpCode = await OTP.findOne({ otp: req.body.otp });
+    const user = await User.findOne({ UserName: req.body.UserName });
+
+    if (!OtpCode) {
+      return res.status(404).json({
         status: "ERROR",
-        message: "The input is required",
+        message: "The OTP is invalid or may have expired",
+      });
+    } else if (OtpCode.isUsed) {
+      const deleteOTP = await OTP.findByIdAndDelete(OtpCode._id);
+      return res.status(409).json({
+        status: "ERROR",
+        message: "The OTP is already used",
+      });
+    } 
+    else if (!user) {
+      return res.status(404).json({
+        status: "ERROR",
+        message: "The user does not exist",
       });
     }
-    const user = await UserService.FindUserByUserName(UserName);
-    const response = await UserService.VerifyOTP(req.body);
-    return res.status(200).json(response);
+    else {
+      if (OtpCode.otp !== user.otp) {
+        return res.status(400).json({
+          status: "ERROR",
+          message: "The OTP is invalid",
+        });
+      }
+      else {
+        const deleteOTP = await OTP.findByIdAndDelete(OtpCode._id);
+        await user.updateOne({ otp: null });
+        return res.status(200).json({
+          status: "OK",
+          message: "The OTP is valid",
+        });
+      }
+    }
+  } catch (e) {
+    return res.status(404).json({
+      error: e.message,
+    });
+  }
+};
+
+const SendOTP = async (req, res) => {
+  try {
+    const user = await User.findOne({ UserName: req.body.UserName });
+    if (!user) {
+      return res.status(404).json({
+        status: "ERROR",
+        message: "The user does not exist",
+      });
+    }
+
+    const newOTP = await OTP.create({
+      UserId: user._id,
+      otp: crypto.randomInt(0, Math.pow(10, 6)).toString().padStart(6, "0"),
+    });
+    await user.updateOne({ otp: newOTP.otp });
+
+    const sendEmail = await MailService.sendMail(
+      user.Email,
+      "Verify your OTP",
+      `Your OTP is: ${newOTP.otp}`
+    );
+
+    return res.status(200).json({
+      status: "OK",
+      message: "The OTP has been sent to your email",
+    });
   } catch (e) {
     return res.status(404).json({
       error: e.message,
@@ -158,5 +219,6 @@ module.exports = {
   LoginUser,
   DeleteUser,
   GetDetailsUser,
+  SendOTP,
   VerifyOTP,
 };

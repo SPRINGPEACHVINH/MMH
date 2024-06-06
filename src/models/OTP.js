@@ -7,9 +7,9 @@ const otpSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    OTP: { type: String, required: true },
+    otp: { type: String, required: true },
     isUsed: { type: Boolean, default: false },
-    expireAt: { type: Date, default: Date.now, index: { expires: "5m" } },
+    expireAt: { type: Date, default: Date.now, index: { expires: "1m" } },
   },
   {
     timestamps: true,

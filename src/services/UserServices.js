@@ -74,6 +74,7 @@ const loginUser = (userLogin) => {
       const access_token = await genneralToken.genneralAccessToken({
         id: checkUser._id,
         isAdmin: checkUser.isAdmin,
+        isVerified: checkUser.isVerified,
       });
 
       resolve({
@@ -105,6 +106,7 @@ const FindUserByUserName = (UserName) => {
           status: "OK",
           message: "User fetched successfully",
           data: {
+            UserId: user._id,
             UserName: user.UserName,
             Email: user.Email,
           },

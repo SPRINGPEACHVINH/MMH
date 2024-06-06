@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema(
     Address: { type: String },
     Balance: { type: Number, default: 0, required: true },
     isVerified: { type: Boolean, default: false },
+    otp: { type: String, default: null, unique: true },
     isAdmin: { type: Boolean, default: false },
     AccessToken: { type: String },
   },
