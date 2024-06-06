@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const User = require("../models/User");
 const Token = require("../models/Token");
 const OTP = require("../models/OTP");
+const Transaction = require("../models/Transaction");
 
 const CreateUser = async (req, res) => {
   try {
@@ -133,21 +134,18 @@ const VerifyOTP = async (req, res) => {
         status: "ERROR",
         message: "The OTP is already used",
       });
-    } 
-    else if (!user) {
+    } else if (!user) {
       return res.status(404).json({
         status: "ERROR",
         message: "The user does not exist",
       });
-    }
-    else {
+    } else {
       if (OtpCode.otp !== user.otp) {
         return res.status(400).json({
           status: "ERROR",
           message: "The OTP is invalid",
         });
-      }
-      else {
+      } else {
         const deleteOTP = await OTP.findByIdAndDelete(OtpCode._id);
         await user.updateOne({ otp: null });
         return res.status(200).json({
@@ -196,6 +194,72 @@ const SendOTP = async (req, res) => {
   }
 };
 
+const Transfer = async (req, res) => {
+  try {
+    const { From, To, amount } = req.body;
+    if (!From || !To || !amount) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "The input is required",
+      });
+    }
+    const fromUser = await User.findOne({ UserName: From });
+    const toUser = await User.findOne({ UserName: To });
+    if (!fromUser || !toUser) {
+      return res.status(404).json({
+        status: "ERROR",
+        message: "The user does not exist",
+      });
+    }
+    if (fromUser.Balance < amount) {
+      return res.status(400).json({
+        status: "ERROR",
+        message: "The balance is not enough",
+      });
+    } else {
+      console.log("fromUser", fromUser.UserName);
+      const transfer = await Transaction.create({
+        From: fromUser.UserName,
+        To: toUser.UserName,
+        amount: amount,
+      });
+      await fromUser.updateOne({ Balance: fromUser.Balance - amount });
+      await toUser.updateOne({ Balance: toUser.Balance + +amount });
+      return res.status(200).json({
+        status: "OK",
+        message: "Transfer successfully",
+        data: transfer,
+      });
+    }
+  } catch (e) {
+    return res.status(404).json({
+      error: e.message,
+    });
+  }
+};
+
+const TransferHistory = async (req, res) => {
+  try {
+    const userName = req.body.UserName;
+    if (!userName) {
+      return res.status(200).json({
+        status: "ERROR",
+        message: "The UserName is required",
+      });
+    }
+    const history = await Transaction.find().populate('From', ['UserName']).populate('To', ['UserName']);
+    return res.status(200).json({
+      status: "OK",
+      message: "History fetched successfully",
+      data: history,
+    });
+  } catch (e) {
+    return res.status(404).json({
+      error: e.message,
+    });
+  }
+};
+
 // const RefreshToken = async (req, res) => {
 //   try {
 //     const token = req.headers.token.split(" ")[1];
@@ -221,4 +285,6 @@ module.exports = {
   GetDetailsUser,
   SendOTP,
   VerifyOTP,
+  Transfer,
+  TransferHistory,
 };
