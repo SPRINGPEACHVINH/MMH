@@ -1,5 +1,6 @@
 import React, { Fragment, useEffect } from "react";
 import { routes } from "../routes";
+import "../styles/App.css";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import DefaultComponentFooter from "../components/DefaultComponent/DefaultComponentFooter";
 import DefaultComponentHeader from "../components/DefaultComponent/DefaultComponentHeader";
