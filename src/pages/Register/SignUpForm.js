@@ -144,7 +144,7 @@ function SignUpForm() {
         <input type="checkbox" required />
         <span style={{ fontSize: "0.8em", marginTop: "3px", fontSize: "13px" }}>
           Tôi đồng ý với <a href="#">Điều khoản sử dụng</a> và{" "}
-          <a href="#">Chính sách bảo mật</a> của TicketX88
+          <a href="#">Chính sách bảo mật</a> của NT219
         </span>
       </div>
 
