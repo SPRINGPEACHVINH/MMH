@@ -11,15 +11,9 @@ const ShowHome = () => {
               Our Responsibility
             </h1>
             <p>
-              Welcome to RB BANK. It is a high quality, customer centric and
-              service driven Bank. We listen, You prosper.
+              Welcome to NT219 Banking, a digital bank that helps you manage your money and grow your wealth.
             </p>
             <a href="/profile" class="button">Get started</a>
-          </div>
-          <div class="social">
-            <a href="linkedin.com/in/kashish-bagadia-331176191"><i class="fab fa-linkedin"></i></a>
-            <a href="https://github.com/kashishbagadia"><i class="fab fa-github"></i></a>
-            <a href="https://www.instagram.com/"><i class="fab fa-instagram"></i></a>
           </div>
         </div>
       </section>
