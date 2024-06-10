@@ -3,13 +3,13 @@
     margin: 0px;
     padding: 0px;
     box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
+    font-family: Arial, sans-serif;
     
 }
 section{
     min-height: 100vh;
     width: 100%;
-    background-image: url('https://cdn.wallpapersafari.com/81/21/s7dqo3.jpg');
+    background-image: url('https://i.imgur.com/z58iTRR.png');
     backdrop-filter: grayscale(0.5) opacity(0.8);
     background-position: center;
     background-repeat: no-repeat;
@@ -27,28 +27,43 @@ body{
     display: flex;
     justify-content: center;
     align-items: center;
-    /* min-height: 100vh; */
     flex-wrap: wrap;
     background: #303d5a;
 }
 
+.auth-button{
+    margin-left: 10px;
+    padding: 20px 30px;
+    border: none;
+    background-color: transparent;
+    color: rgb(255, 255, 255);
+    cursor: pointer;
+    font-size: 20px;
+    height: 70%;
+    float: right;
+}
+
+a{
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+}
+
 .navbar{
     min-width: 100vw;
-    background: #202c45;
-    padding: 0 50px;
+    background: #3BAB9B;
     box-sizing: border-box;
 }
 
 nav{
     min-width: 100%;
-    background: #202c45;
-    padding: 0 50px;
+    background: #3BAB9B;
     box-sizing: border-box;
 }
 nav h1{
     margin: 0;    
-    padding: 15px 20px;
+    padding: 15px 40px;
     float: left;
+    font-size: 30px;
 }
 nav h1 a{
     color: #fff;
@@ -57,74 +72,23 @@ nav h1 a{
 nav ul{
     margin: 0;
     padding: 0;
-    float: right;
 }
 nav ul li{
     list-style: none;
     display: inline-block;
     padding: 20px 30px;
     transition: .5s;
+    font-size: 23px;
 }
 nav ul li a{
     color: #fff;
     text-decoration: none;
 }
 nav ul li:hover{
-    background: #f2184f;
+    background: #5240CB;
 }
-.responsive-bar{
-    width: 100vw;
-    background: #202c45;
-    padding: 10px 30px;
-    box-sizing: border-box;
-    display: none;
-}
-.responsive-bar h3{
-    margin: 0;
-    padding: 3px 0;
-    color: #fff;
-    float: left;
-}
-.responsive-bar h3 a{
-    color: #fff;
-    text-decoration: none;
-}
-.responsive-bar h4{
-    margin: 0;
-    padding: 0;
-    color: #fff;
-    float: right;
-    padding: 5px 10px;
-    background: #f2184f;
-    text-transform: uppercase;
-    cursor: pointer;
-}
-@media (max-width:900px){
-    nav{
-        display: none;
-        padding: 0;
-    }
-    .responsive-bar{
-        display: block;
-    }
-    nav h1{
-        display: block;
-        float: none;
-    }
-    nav ul{
-        float: none;
-    }
-    nav ul li{
-        display: block;
-        text-align: center;
-        background: #141e33;
-        padding: 15px 20px;
-        border-bottom: 1px solid rgba(255,255,255,.1);
-    }
-    h1.brand{
-        display: none;
-    }
-}
+
+
 .content{
     margin: 100px 100px;
 }
@@ -425,7 +389,7 @@ h1{
 input{
     position: relative;
     display: inline-block;
-    font-size: 20px;
+    font-size: 16px;
     box-sizing: border-box;
     transition: .5s;
 }
@@ -440,20 +404,18 @@ input[type="number"]{
     border-radius: 12px ;
 }
 input[type="submit"]{
-    margin:20px 0px;
-    position: relative;
-    left: -5px;
-    border-radius: 12px ;
-    width: 250px;
-    height: 50px;
+    width: 100% ;
+    padding: 10px ;
+    margin-top: 17px;
+    background-color: #3BAB9B;
     border: none;
-    outline: none;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
     cursor: pointer;
-    background: #2e3e63;
-    color: #fff;
 }
 input[type="submit"]:hover{
-    background: #ff5722;
+    background: #5240CB;
 }
 
 /* transaction css */
