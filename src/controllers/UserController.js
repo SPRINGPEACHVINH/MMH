@@ -30,7 +30,20 @@ const CreateUser = async (req, res) => {
       });
     }
 
+    const checkUserName = await User.findOne({ UserName: UserName });
+    if (checkUserName !== null) {
+      return res.status(200).json({
+        status: "ERROR",
+        message: "UserName already exists",
+      });
+    }
+
     const newUser = await UserService.createUser(req.body);
+    
+    let part1 = crypto.randomInt(10000000, 100000000).toString(); // Generate an 8-digit number
+    let part2 = crypto.randomInt(10000000, 100000000).toString(); // Generate another 8-digit number
+    CreditCardNumber = part1 + part2; // Concatenate the two numbers to get a 16-digit number
+    await newUser.updateOne({ CreditCardNumber: CreditCardNumber });
     try {
       const token = await Token.create({
         UserId: newUser._id,
@@ -43,7 +56,9 @@ const CreateUser = async (req, res) => {
         `Please verify your account by clicking the link: http://localhost:8888/api/mail/verify/${newUser.Email}/${token.token} \nThank You!\n`
       );
     } catch (e) {
-      console.log(e);
+      return res.status(404).json({
+        error: e.message,
+      });
     }
     return res.status(200).json({
       status: "OK",
@@ -247,7 +262,9 @@ const TransferHistory = async (req, res) => {
         message: "The UserName is required",
       });
     }
-    const history = await Transaction.find().populate('From', ['UserName']).populate('To', ['UserName']);
+    const history = await Transaction.find()
+      .populate("From", ["UserName"])
+      .populate("To", ["UserName"]);
     return res.status(200).json({
       status: "OK",
       message: "History fetched successfully",

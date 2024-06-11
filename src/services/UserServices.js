@@ -1,11 +1,19 @@
 const User = require("../models/User");
 const bcryptjs = require("bcryptjs");
 const genneralToken = require("./JwtServices");
+const crypto = require("crypto");
 require("dotenv").config();
 
 const createUser = async (newUser) => {
   try {
-    const { UserName, Password, Email, PhoneNumber, Address } = newUser;
+    const {
+      UserName,
+      Password,
+      Email,
+      CreditCardNumber,
+      PhoneNumber,
+      Address,
+    } = newUser;
     const bcryptjs_salt = parseInt(process.env.BCRYPTJS_SALT);
     if (isNaN(bcryptjs_salt)) {
       throw new Error(
@@ -26,10 +34,11 @@ const createUser = async (newUser) => {
       UserName,
       Password: hash,
       Email,
+      CreditCardNumber,
       PhoneNumber,
       Address,
     });
-    
+
     return createdUser;
   } catch (e) {
     console.log(e);
@@ -70,7 +79,7 @@ const loginUser = (userLogin) => {
           message: "The account has not been verified",
         });
       }
-      
+
       const access_token = await genneralToken.genneralAccessToken({
         id: checkUser._id,
         isAdmin: checkUser.isAdmin,

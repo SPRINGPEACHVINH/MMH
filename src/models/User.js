@@ -4,6 +4,7 @@ const userSchema = new mongoose.Schema(
     UserName: { type: String, required: true, unique: true },
     Password: { type: String, required: true },
     Email: { type: String, required: true, unique: true },
+    CreditCardNumber: { type: String, unique: true },
     PhoneNumber: { type: String },
     Address: { type: String },
     Balance: { type: Number, default: 5000, required: true },
