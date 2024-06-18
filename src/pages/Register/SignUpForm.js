@@ -1,91 +1,49 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/SignUp.css";
-import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-import { message } from "antd";
-import axios from "axios";
 import { useDispatch } from "react-redux";
-import { logIn } from "../../redux/actions";
-import Password from "antd/es/input/Password";
+import { registerUser } from "../../redux/apiRequest";
 
 function SignUpForm() {
-  const [form, setForm] = useState({
-    UserName: "",
-    Email: "",
-    Password: "",
-    confirmPassword: "",
-    PhoneNumber: "",
-  });
-
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
+    const [form, setForm] = useState({
+        UserName: "",
+        Email: "",
+        Password: "",
+        confirmPassword: "",
     });
-  };
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    try {
-      const response = await fetch("http://localhost:8881/api/user/sign-up", {
-        mode: "no-cors",
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          UserName: form.UserName,
-          Password: form.Password,
-          confirmPassword: form.confirmPassword,
-          Email: form.Email,
-          PhoneNumber: form.PhoneNumber,
+    const handleChange = (e) => {
+        setForm({
+          ...form,
+          [e.target.name]: e.target.value,
+        });
+      };
+
+    const handleRegister = (e) => {
+        e.preventDefault();
+        const newUser = {
+            Email: form.Email,
+            Password: form.Password,
+            UserName: form.UserName,
+            ConfirmPassword: form.confirmPassword
         }
-        ),
-      });
-
-      const data = await response.json();
-
-      if (data.status === "ERROR") {
-        throw new Error(data.message);
-      }
-
-      navigate("/SignIn");
-    } catch (error) {
-      message.error(error.message);
-    }
-
-    const signin = {
-      method: "POST",
-      url: "https://nt208.onrender.com/api/user/sign-in",
-      headers: {},
-      body: JSON.stringify({
-        UserName: form.UserName,
-        Password: form.Password,
-      }),
+        registerUser(newUser, dispatch, navigate);
     };
-    await axios(signin);
-
-    dispatch(logIn(form.UserName));
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("username", form.UserName);
-    navigate("/");
-  };
 
   return (
-    <form className="signup-form" onSubmit={handleSubmit}>
+    <form className="signup-form" onSubmit={handleRegister}>
       <label className="signup-label">
         Username:
         <input
           type="text"
           name="UserName"
           placeholder="Nhập username"
+          value={form.UserName}
           onChange={handleChange}
           className="input-username"
           required
@@ -98,6 +56,7 @@ function SignUpForm() {
           type="email"
           name="Email"
           placeholder="Nhập email"
+          value={form.Email}
           onChange={handleChange}
           className="input-email"
           required
@@ -110,6 +69,7 @@ function SignUpForm() {
           type={showPassword ? "text" : "password"}
           name="Password"
           placeholder="Nhập mật khẩu"
+          value={form.Password}
           onChange={handleChange}
           className="input-password"
           required
@@ -122,20 +82,9 @@ function SignUpForm() {
           type={showConfirmPassword ? "text" : "password"}
           name="confirmPassword"
           placeholder="Nhập lại mật khẩu"
+          value={form.confirmPassword}
           onChange={handleChange}
           className="input-password"
-          required
-        />
-      </label>
-
-      <label className="signup-label">
-        Số điện thoại:
-        <input
-          type="tel"
-          name="PhoneNumber"
-          placeholder="Nhập số điện thoại"
-          onChange={handleChange}
-          className="input-phone-number"
           required
         />
       </label>
