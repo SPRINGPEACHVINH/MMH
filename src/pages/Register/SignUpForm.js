@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/SignUp.css";
 import { useDispatch } from "react-redux";
-import { registerUser } from "../../redux/apiRequest";
 
 function SignUpForm() {
     const [form, setForm] = useState({
@@ -32,7 +31,6 @@ function SignUpForm() {
             UserName: form.UserName,
             ConfirmPassword: form.confirmPassword
         }
-        registerUser(newUser, dispatch, navigate);
     };
 
   return (

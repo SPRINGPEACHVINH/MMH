@@ -1,21 +1,53 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { loginUser } from "../../redux/apiRequest";
+import { logIn } from "../../redux/actions";
+import { message } from "antd";
 import "../../styles/SignIn.css";
 
 function SignInForm() {
+  const [form, setForm] = useState({
+    UserName: "",
+    Password: "",
+  });
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const newUSer = {
-      username: username,
-      password: password,
-    };
-    loginUser(newUSer, dispatch, navigate);
+    try {
+      const response = await fetch(
+        "http://localhost:8888/api/user/signin",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(form),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.status === "ERROR") {
+        throw new Error(data.message);
+      }
+
+      dispatch(logIn(form.UserName));
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("username", form.UserName);
+      navigate("/");
+    } catch (error) {
+      message.error(error.message);
+    }
+  };
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
   };
 
   return (
@@ -26,6 +58,7 @@ function SignInForm() {
           type="text"
           name="UserName"
           placeholder="Nhập username"
+          onChange={handleChange}
           className="input-username"
           required
         />
@@ -36,6 +69,7 @@ function SignInForm() {
         <input
           name="Password"
           placeholder="Nhập mật khẩu"
+          onChange={handleChange}
           className="input-password"
           required
         />
