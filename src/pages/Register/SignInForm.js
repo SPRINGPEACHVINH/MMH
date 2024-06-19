@@ -1,67 +1,31 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { logIn } from "../../redux/actions";
-import { message } from "antd";
+import { loginUser } from "../../redux/apiRequest";
 import "../../styles/SignIn.css";
-import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 
 function SignInForm() {
-  const [form, setForm] = useState({
-    UserName: "",
-    Password: "",
-  });
-
-  const [showPassword, setShowPassword] = useState(false);
-
-  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const dispatch = useDispatch();
-
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
+  const navigate = useNavigate();
+  const handleLogin = (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch(
-        "https://nt208.onrender.com/api/user/sign-in",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(form),
-        }
-      );
-
-      const data = await response.json();
-
-      if (data.status === "ERROR") {
-        throw new Error(data.message);
-      }
-
-      dispatch(logIn(form.UserName));
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("username", form.UserName);
-      navigate("/");
-    } catch (error) {
-      message.error(error.message);
-    }
+    const newUSer = {
+      username: username,
+      password: password,
+    };
+    loginUser(newUSer, dispatch, navigate);
   };
 
   return (
-    <form className="signin-form" onSubmit={handleSubmit}>
+    <form className="signin-form" onSubmit={handleLogin}>
       <label className="signin-label">
         Username:
         <input
           type="text"
           name="UserName"
           placeholder="Nhập username"
-          onChange={handleChange}
           className="input-username"
           required
         />
@@ -70,10 +34,8 @@ function SignInForm() {
       <label className="password-container">
         Mật khẩu:
         <input
-          type={showPassword ? "text" : "password"}
           name="Password"
           placeholder="Nhập mật khẩu"
-          onChange={handleChange}
           className="input-password"
           required
         />
