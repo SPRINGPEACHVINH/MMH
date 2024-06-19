@@ -31,7 +31,7 @@ body{
     background: #303d5a;
 }
 
-.auth-button{
+.actions{
     margin-left: 10px;
     padding: 20px 30px;
     border: none;
@@ -569,4 +569,18 @@ footer{
     min-height: 100vh;
 }
 
+.user-dropdown {
+    display: inline-block;
+    position: relative;
+}
 
+.actions button {
+    background-color: initial;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 20px;
+    height: 70%;
+    margin-left: 10px;
+    padding: 8px 12px;
+}

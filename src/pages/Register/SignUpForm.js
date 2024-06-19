@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../styles/SignUp.css";
 import { useDispatch } from "react-redux";
+import { logIn } from "../../redux/actions";
+import axios from "axios";
+import { message } from "antd";
 
 function SignUpForm() {
     const [form, setForm] = useState({
@@ -23,14 +26,52 @@ function SignUpForm() {
         });
       };
 
-    const handleRegister = (e) => {
-        e.preventDefault();
-        const newUser = {
-            Email: form.Email,
-            Password: form.Password,
+    const handleRegister = async (e) => {
+      e.preventDefault();
+
+      try {
+        const response = await fetch("http://localhost:8888/api/user/signup", {
+          mode: "no-cors",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
             UserName: form.UserName,
-            ConfirmPassword: form.confirmPassword
+            Password: form.Password,
+            confirmPassword: form.confirmPassword,
+            Email: form.Email,
+            PhoneNumber: form.PhoneNumber,
+          }
+          ),
+        });
+  
+        const data = await response.json();
+  
+        if (data.status === "ERROR") {
+          throw new Error(data.message);
         }
+  
+        navigate("/SignIn");
+      } catch (error) {
+        message.error(error.message);
+      }
+  
+      const signin = {
+        method: "POST",
+        url: "http://localhost:8888/api/user/signup",
+        headers: {},
+        body: JSON.stringify({
+          UserName: form.UserName,
+          Password: form.Password,
+        }),
+      };
+      await axios(signin);
+  
+      dispatch(logIn(form.UserName));
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("username", form.UserName);
+      navigate("/");
     };
 
   return (
